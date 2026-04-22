@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPIKE Prime Code Helper</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #FFD93D;
+    --orange: #FF6B35;
+    --teal: #0CC0DF;
+    --dark: #1A1A2E;
+    --darker: #0F0F1A;
+    --card: #16213E;
+    --card2: #1E2A45;
+    --green: #4ECDC4;
+    --red: #FF6B6B;
+    --white: #F0F4FF;
+    --muted: #8892B0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--darker);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(12,192,223,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 80% 80%, rgba(255,107,53,0.10) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .lego-brick {
+    font-size: 2.4rem;
+  }
+
+  header h1 {
+    font-size: 2.4rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--yellow) 0%, var(--orange) 50%, var(--teal) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+
+  /* Mode toggle */
+  .mode-toggle {
+    display: flex;
+    background: var(--card);
+    border-radius: 14px;
+    padding: 5px;
+    gap: 5px;
+    margin: 0 auto 32px;
+    max-width: 340px;
+    border: 1px solid rgba(255,255,255,0.07);
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 9px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    transition: all 0.2s;
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .mode-btn.active {
+    background: linear-gradient(135deg, var(--orange), var(--yellow));
+    color: var(--darker);
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    background: var(--card);
+    border: 2.5px dashed rgba(12,192,223,0.4);
+    border-radius: 20px;
+    padding: 36px 24px 28px;
+    text-align: center;
+    transition: all 0.25s;
+    position: relative;
+    animation: fadeUp 0.6s 0.15s ease both;
+    margin-bottom: 20px;
+    outline: none;
+  }
+
+  .upload-zone:focus, .upload-zone.paste-ready {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(12,192,223,0.18);
+  }
+
+  .upload-zone.drag-over {
+    border-color: var(--teal);
+    background: var(--card2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(12,192,223,0.12);
+  }
+
+  .upload-icon { font-size: 3.2rem; margin-bottom: 12px; }
+
+  .upload-zone h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .upload-zone .sub {
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+
+  .paste-shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(12,192,223,0.18), rgba(12,192,223,0.08));
+    border: 1.5px solid rgba(12,192,223,0.35);
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--teal);
+    margin-bottom: 14px;
+    animation: pulse-border 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-border {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(12,192,223,0.3); }
+    50% { box-shadow: 0 0 0 6px rgba(12,192,223,0); }
+  }
+
+  kbd {
+    background: rgba(12,192,223,0.2);
+    border: 1px solid rgba(12,192,223,0.4);
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.88rem;
+  }
+
+  .divider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0 14px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .divider-row::before, .divider-row::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .alt-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .alt-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 7px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .alt-btn input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .alt-btn:hover {
+    border-color: rgba(255,255,255,0.22);
+    color: var(--white);
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* ── Settings button ── */
+  .settings-trigger {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--card2);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    color: var(--muted);
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .settings-trigger:hover {
+    border-color: var(--orange);
+    color: var(--orange);
+    transform: rotate(30deg);
+  }
+  .settings-trigger.has-issues {
+    border-color: rgba(255,107,53,0.5);
+    color: var(--orange);
+  }
+  .settings-trigger .issue-dot {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 9px; height: 9px;
+    background: var(--orange);
+    border-radius: 50%;
+    display: none;
+    border: 2px solid var(--darker);
+  }
+  .settings-trigger.has-issues .issue-dot { display: block; }
+
+  /* ── Settings drawer ── */
+  .settings-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .settings-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .settings-drawer {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(480px, 95vw);
+    background: var(--dark);
+    border-left: 1px solid rgba(255,255,255,0.08);
+    z-index: 201;
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .settings-drawer.open { transform: translateX(0); }
+
+  .drawer-header {
+    padding: 22px 22px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .drawer-header h2 {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .close-drawer {
+    background: rgba(255,255,255,0.06);
+    border: none;
+    color: var(--muted);
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .close-drawer:hover { background: rgba(255,255,255,0.12); color: var(--white); }
+
+  .drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 22px;
+  }
+
+  .drawer-desc {
+    background: rgba(255,107,53,0.08);
+    border: 1px solid rgba(255,107,53,0.2);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.88rem;
+    color: #C8A882;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .drawer-desc strong { color: var(--orange); }
+
+  .issues-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .issue-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 10px 12px;
+    transition: border-color 0.2s;
+  }
+  .issue-item:focus-within { border-color: rgba(255,107,53,0.4); }
+
+  .issue-item textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--white);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    resize: none;
+    min-height: 42px;
+    line-height: 1.5;
+  }
+  .issue-item textarea::placeholder { color: var(--muted); }
+
+  .delete-issue {
+    background: none;
+    border: none;
+    color: rgba(255,107,107,0.4);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px 4px;
+    border-radius: 6px;
+    transition: color 0.2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .delete-issue:hover { color: var(--red); }
+
+  .add-issue-btn {
+    width: 100%;
+    padding: 10px;
+    background: rgba(255,107,53,0.08);
+    border: 1.5px dashed rgba(255,107,53,0.3);
+    border-radius: 12px;
+    color: var(--orange);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+  }
+  .add-issue-btn:hover {
+    background: rgba(255,107,53,0.14);
+    border-color: rgba(255,107,53,0.5);
+  }
+
+  .drawer-footer {
+    padding: 16px 22px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .save-btn {
+    flex: 1;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--orange), var(--yellow));
+    border: none;
+    border-radius: 12px;
+    color: var(--darker);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .save-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .saved-toast {
+    position: fixed;
+    bottom: 90px;
+    right: 28px;
+    background: var(--green);
+    color: var(--darker);
+    font-weight: 800;
+    font-size: 0.88rem;
+    padding: 9px 18px;
+    border-radius: 10px;
+    z-index: 300;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.25s;
+    pointer-events: none;
+  }
+  .saved-toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Default issues tags */
+  .default-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 16px;
+  }
+  .default-tag {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .default-tag:hover {
+    background: rgba(255,107,53,0.1);
+    border-color: rgba(255,107,53,0.3);
+    color: var(--orange);
+  }
+
+  .section-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 9px;
+  }
+
+  /* Preview */
+  #preview-container {
+    display: none;
+    background: var(--card);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.07);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  #preview-container.show { display: block; }
+
+  .preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: var(--card2);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .preview-header span {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--teal);
+  }
+
+  .remove-btn {
+    background: rgba(255,107,107,0.15);
+    border: none;
+    color: var(--red);
+    cursor: pointer;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    transition: background 0.2s;
+  }
+  .remove-btn:hover { background: rgba(255,107,107,0.28); }
+
+  #preview-img {
+    width: 100%;
+    max-height: 320px;
+    object-fit: contain;
+    background: #0a0a14;
+    display: block;
+  }
+
+  /* Context input */
+  .context-box {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.07);
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .context-box label {
+    display: block;
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: var(--yellow);
+    margin-bottom: 8px;
+  }
+
+  .context-box textarea {
+    width: 100%;
+    background: var(--darker);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    color: var(--white);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    padding: 11px 14px;
+    resize: vertical;
+    min-height: 76px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .context-box textarea:focus {
+    border-color: var(--teal);
+  }
+
+  .context-box textarea::placeholder { color: var(--muted); }
+
+  /* Analyze button */
+  .analyze-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.15rem;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--orange) 0%, var(--yellow) 100%);
+    color: var(--darker);
+    transition: all 0.25s;
+    letter-spacing: 0.3px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.25s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .analyze-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .analyze-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(255,107,53,0.35);
+  }
+
+  .analyze-btn .btn-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  /* Loading */
+  .spinner {
+    width: 20px; height: 20px;
+    border: 3px solid rgba(26,26,46,0.4);
+    border-top-color: var(--darker);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  /* Results */
+  #results {
+    display: none;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  #results.show { display: block; }
+
+  .result-section {
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 18px;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    font-weight: 800;
+    font-size: 1rem;
+  }
+
+  .result-header .icon { font-size: 1.4rem; }
+
+  .result-body {
+    padding: 18px 20px;
+    font-size: 0.97rem;
+    line-height: 1.75;
+    color: #C8D4F0;
+  }
+
+  /* Student section */
+  .student-section .result-header {
+    background: linear-gradient(135deg, rgba(12,192,223,0.25), rgba(12,192,223,0.1));
+    color: var(--teal);
+  }
+  .student-section { background: var(--card); }
+
+  /* Teacher section */
+  .teacher-section .result-header {
+    background: linear-gradient(135deg, rgba(255,107,53,0.25), rgba(255,107,53,0.1));
+    color: var(--orange);
+  }
+  .teacher-section { background: var(--card); }
+
+  /* Hidden in student mode */
+  .teacher-only { display: none; }
+  .teacher-only.show { display: block; }
+
+  /* Hint chips */
+  .hint-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .chip {
+    background: rgba(12,192,223,0.12);
+    border: 1px solid rgba(12,192,223,0.25);
+    color: var(--teal);
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 0.83rem;
+    font-weight: 700;
+  }
+
+  .chip.warn {
+    background: rgba(255,217,61,0.12);
+    border-color: rgba(255,217,61,0.3);
+    color: var(--yellow);
+  }
+
+  .chip.ok {
+    background: rgba(78,205,196,0.12);
+    border-color: rgba(78,205,196,0.3);
+    color: var(--green);
+  }
+
+  /* Try again */
+  .try-again-btn {
+    background: transparent;
+    border: 2px solid rgba(255,255,255,0.12);
+    color: var(--muted);
+    padding: 11px 24px;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.92rem;
+    transition: all 0.2s;
+    display: block;
+    margin: 0 auto 20px;
+  }
+  .try-again-btn:hover {
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+
+  /* Teacher mode banner */
+  .teacher-badge {
+    display: none;
+    background: linear-gradient(135deg, rgba(255,107,53,0.18), rgba(255,217,61,0.1));
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 12px;
+    padding: 11px 16px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 20px;
+    text-align: center;
+    animation: fadeUp 0.4s ease both;
+  }
+  .teacher-badge.show { display: block; }
+
+  /* Formatted output styles */
+  .result-body strong { color: var(--white); }
+  .result-body .step { 
+    background: rgba(12,192,223,0.07); 
+    border-left: 3px solid var(--teal);
+    padding: 8px 12px;
+    border-radius: 0 8px 8px 0;
+    margin: 8px 0;
+  }
+  .result-body .warning {
+    background: rgba(255,217,61,0.07);
+    border-left: 3px solid var(--yellow);
+    padding: 8px 12px;
+    border-radius: 0 8px 8px 0;
+    margin: 8px 0;
+  }
+  .result-body .good {
+    background: rgba(78,205,196,0.07);
+    border-left: 3px solid var(--green);
+    padding: 8px 12px;
+    border-radius: 0 8px 8px 0;
+    margin: 8px 0;
+  }
+
+  /* ── PIN modal ── */
+  .pin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .pin-overlay.open { opacity: 1; pointer-events: all; }
+
+  .pin-modal {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    width: min(340px, 90vw);
+    text-align: center;
+    transform: scale(0.95);
+    transition: transform 0.2s;
+  }
+  .pin-overlay.open .pin-modal { transform: scale(1); }
+
+  .pin-modal h3 {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .pin-modal p {
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .pin-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .pin-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.2);
+    transition: all 0.15s;
+  }
+  .pin-dot.filled {
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+  .pin-dot.error {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  .pin-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .pin-key {
+    background: var(--card2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: var(--white);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pin-key:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+  .pin-key:active { transform: scale(0.94); }
+  .pin-key.wide { grid-column: span 2; }
+  .pin-key.cancel { color: var(--muted); font-size: 0.88rem; }
+
+  .pin-error-msg {
+    color: var(--red);
+    font-size: 0.85rem;
+    font-weight: 700;
+    min-height: 20px;
+    transition: opacity 0.2s;
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Error */
+  .error-msg {
+    background: rgba(255,107,107,0.12);
+    border: 1px solid rgba(255,107,107,0.3);
+    border-radius: 12px;
+    color: var(--red);
+    padding: 14px 18px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo-row">
+      <span class="lego-brick">🧱</span>
+      <h1>SPIKE Prime<br>Code Helper</h1>
+      <span class="lego-brick">🤖</span>
+    </div>
+    <p>Upload a screenshot of your block code and get help debugging!</p>
+  </header>
+
+  <!-- Mode toggle -->
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btn-student" onclick="setMode('student')">🎒 Student View</button>
+    <button class="mode-btn" id="btn-teacher" onclick="openPinModal()">👩‍🏫 Teacher View</button>
+  </div>
+
+  <div class="teacher-badge" id="teacher-badge">
+    👩‍🏫 Teacher Mode — You'll see student feedback <em>and</em> a detailed teacher summary
+  </div>
+
+  <!-- Upload -->
+  <div class="upload-zone" id="upload-zone" tabindex="0">
+    <div class="upload-icon">📋</div>
+    <h2>Paste your screenshot here</h2>
+    <p class="sub">Take a screenshot, then click here and paste</p>
+    <div class="paste-shortcut">
+      <span>Click here, then press</span>
+      <kbd>Ctrl</kbd> + <kbd>V</kbd>
+      <span>&nbsp;(or <kbd>⌘V</kbd> on Mac)</span>
+    </div>
+    <div class="divider-row">or</div>
+    <div class="alt-actions">
+      <button class="alt-btn">
+        📁 Choose a file
+        <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
+      </button>
+      <button class="alt-btn" id="drag-hint">🖱️ Drag & drop an image</button>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div id="preview-container">
+    <div class="preview-header">
+      <span>📷 Your block code screenshot</span>
+      <button class="remove-btn" onclick="removeImage()">✕ Remove</button>
+    </div>
+    <img id="preview-img" src="" alt="Block code preview">
+  </div>
+
+  <!-- Context -->
+  <div class="context-box">
+    <label>💬 What is your program supposed to do?</label>
+    <textarea id="context-input" placeholder="Example: My robot is supposed to drive forward 3 rotations, then turn left and stop when it sees a wall..."></textarea>
+  </div>
+
+  <!-- Analyze -->
+  <button class="analyze-btn" id="analyze-btn" onclick="analyzeCode()" disabled>
+    <div class="btn-inner">
+      <div class="spinner" id="spinner"></div>
+      <span id="btn-text">🔍 Analyze My Code</span>
+    </div>
+  </button>
+
+  <!-- Error -->
+  <div class="error-msg" id="error-msg"></div>
+
+  <!-- Results -->
+  <div id="results">
+    <button class="try-again-btn" onclick="resetTool()">↩ Analyze another screenshot</button>
+
+    <!-- Student feedback -->
+    <div class="result-section student-section">
+      <div class="result-header">
+        <span class="icon">🧩</span>
+        <span>Here's what I noticed in your code</span>
+      </div>
+      <div class="result-body" id="student-feedback"></div>
+    </div>
+
+    <!-- Teacher feedback -->
+    <div class="result-section teacher-section teacher-only" id="teacher-section">
+      <div class="result-header">
+        <span class="icon">📋</span>
+        <span>Teacher Summary</span>
+      </div>
+      <div class="result-body" id="teacher-feedback"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── PIN Modal ── -->
+<div class="pin-overlay" id="pin-overlay">
+  <div class="pin-modal">
+    <h3>🔒 Teacher View</h3>
+    <p>Enter your PIN to continue</p>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinPress('1')">1</button>
+      <button class="pin-key" onclick="pinPress('2')">2</button>
+      <button class="pin-key" onclick="pinPress('3')">3</button>
+      <button class="pin-key" onclick="pinPress('4')">4</button>
+      <button class="pin-key" onclick="pinPress('5')">5</button>
+      <button class="pin-key" onclick="pinPress('6')">6</button>
+      <button class="pin-key" onclick="pinPress('7')">7</button>
+      <button class="pin-key" onclick="pinPress('8')">8</button>
+      <button class="pin-key" onclick="pinPress('9')">9</button>
+      <button class="pin-key cancel" onclick="closePinModal()">Cancel</button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key" onclick="pinBackspace()">⌫</button>
+    </div>
+    <div class="pin-error-msg" id="pin-error"></div>
+  </div>
+</div>
+
+<!-- ── Settings gear button ── -->
+<button class="settings-trigger" id="settings-trigger" onclick="openSettings()" title="Teacher Settings">
+  ⚙️
+  <span class="issue-dot"></span>
+</button>
+
+<!-- ── Saved toast ── -->
+<div class="saved-toast" id="saved-toast">✓ Issues saved!</div>
+
+<!-- ── Settings overlay + drawer ── -->
+<div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
+<div class="settings-drawer" id="settings-drawer">
+  <div class="drawer-header">
+    <h2>⚙️ Teacher Settings</h2>
+    <button class="close-drawer" onclick="closeSettings()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-desc">
+      <strong>Hidden from students.</strong> These common issues are quietly added to the AI's instructions so it knows what to watch for and can nudge students in the right direction — without giving answers away.
+    </div>
+
+    <div class="section-label">Quick-add common issues</div>
+    <div class="default-tags" id="default-tags">
+      <span class="default-tag" onclick="addDefaultIssue(this)">Missing wait block</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">Loop runs forever unintentionally</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">Motor port wrong</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">Sensor threshold too high/low</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">Blocks not connected</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">Wrong rotation direction</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">Program ends before action completes</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">Condition never becomes true</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">Speed set to 0</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">Using degrees instead of rotations</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">No start block</span>
+      <span class="default-tag" onclick="addDefaultIssue(this)">Duplicate programs running</span>
+    </div>
+
+    <div class="section-label">Your issues list</div>
+    <div class="issues-list" id="issues-list"></div>
+    <button class="add-issue-btn" onclick="addIssue('')">+ Add a custom issue</button>
+  </div>
+  <div class="drawer-footer">
+    <button class="save-btn" onclick="saveIssues()">💾 Save Issues</button>
+  </div>
+</div>
+<script>
+  // ── Common issues (shared cloud storage) ───────────────────
+  const STORAGE_KEY = 'teacher-issues';
+  let cachedIssues = []; // in-memory cache so analysis doesn't need to re-fetch
+
+  async function loadIssuesFromCloud() {
+    try {
+      const result = await window.storage.get(STORAGE_KEY, true); // shared=true
+      cachedIssues = result ? JSON.parse(result.value) : [];
+    } catch {
+      cachedIssues = []; // key doesn't exist yet or other error — start empty
+    }
+    return cachedIssues;
+  }
+
+  function getIssues() { return cachedIssues; }
+
+  function updateGearBadge(count) {
+    document.getElementById('settings-trigger').classList.toggle('has-issues', count > 0);
+  }
+
+  async function renderIssuesList() {
+    const list = document.getElementById('issues-list');
+    list.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;padding:8px 0;">Loading...</div>';
+    const issues = await loadIssuesFromCloud();
+    list.innerHTML = '';
+    issues.forEach(text => addIssueItem(text));
+    updateGearBadge(issues.length);
+  }
+
+  function addIssueItem(text) {
+    const list = document.getElementById('issues-list');
+    const item = document.createElement('div');
+    item.className = 'issue-item';
+    item.innerHTML = `<textarea placeholder="Describe a common mistake to watch for..." rows="2">${text}</textarea><button class="delete-issue" onclick="this.closest('.issue-item').remove()" title="Remove">✕</button>`;
+    list.appendChild(item);
+    if (!text) item.querySelector('textarea').focus();
+  }
+
+  function addIssue(text) { addIssueItem(text); }
+
+  function addDefaultIssue(el) {
+    addIssueItem(el.textContent);
+    el.style.opacity = '0.4';
+    el.style.pointerEvents = 'none';
+  }
+
+  async function saveIssues() {
+    const saveBtn = document.querySelector('.save-btn');
+    saveBtn.textContent = 'Saving...';
+    saveBtn.disabled = true;
+    const items = [...document.querySelectorAll('#issues-list textarea')]
+      .map(t => t.value.trim()).filter(Boolean);
+    try {
+      await window.storage.set(STORAGE_KEY, JSON.stringify(items), true); // shared=true
+      cachedIssues = items;
+      updateGearBadge(items.length);
+      const t = document.getElementById('saved-toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    } catch (err) {
+      alert('Could not save issues. Please try again.');
+      console.error(err);
+    }
+    saveBtn.textContent = '💾 Save Issues';
+    saveBtn.disabled = false;
+  }
+
+  async function openSettings() {
+    document.getElementById('settings-overlay').classList.add('open');
+    document.getElementById('settings-drawer').classList.add('open');
+    await renderIssuesList();
+  }
+
+  function closeSettings() {
+    document.getElementById('settings-overlay').classList.remove('open');
+    document.getElementById('settings-drawer').classList.remove('open');
+  }
+
+  let currentMode = 'student';
+  let imageBase64 = null;
+  let imageMimeType = null;
+
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('btn-student').classList.toggle('active', mode === 'student');
+    document.getElementById('btn-teacher').classList.toggle('active', mode === 'teacher');
+    document.getElementById('teacher-badge').classList.toggle('show', mode === 'teacher');
+    const teacherSections = document.querySelectorAll('.teacher-only');
+    teacherSections.forEach(el => el.classList.toggle('show', mode === 'teacher'));
+  }
+
+  // ── PIN logic ───────────────────────────────────────────────
+  const CORRECT_PIN = '2112';
+  let pinEntry = '';
+
+  function openPinModal() {
+    pinEntry = '';
+    updatePinDots();
+    document.getElementById('pin-error').textContent = '';
+    document.getElementById('pin-overlay').classList.add('open');
+  }
+
+  function closePinModal() {
+    document.getElementById('pin-overlay').classList.remove('open');
+    pinEntry = '';
+    updatePinDots();
+  }
+
+  function pinPress(digit) {
+    if (pinEntry.length >= 4) return;
+    pinEntry += digit;
+    updatePinDots();
+    if (pinEntry.length === 4) {
+      setTimeout(checkPin, 150);
+    }
+  }
+
+  function pinBackspace() {
+    pinEntry = pinEntry.slice(0, -1);
+    updatePinDots();
+    document.getElementById('pin-error').textContent = '';
+    document.querySelectorAll('.pin-dot').forEach(d => d.classList.remove('error'));
+  }
+
+  function updatePinDots() {
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById('pd' + i);
+      dot.classList.toggle('filled', i < pinEntry.length);
+      dot.classList.remove('error');
+    }
+  }
+
+  function checkPin() {
+    if (pinEntry === CORRECT_PIN) {
+      closePinModal();
+      setMode('teacher');
+    } else {
+      document.querySelectorAll('.pin-dot').forEach(d => { d.classList.add('error'); d.classList.remove('filled'); });
+      document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
+      pinEntry = '';
+      setTimeout(() => {
+        updatePinDots();
+        document.getElementById('pin-error').textContent = '';
+      }, 1200);
+    }
+  }
+
+  function handleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    loadFile(file);
+  }
+
+  function loadFile(file) {
+    const reader = new FileReader();
+    imageMimeType = file.type || 'image/png';
+    reader.onload = (ev) => {
+      const result = ev.target.result;
+      imageBase64 = result.split(',')[1];
+      document.getElementById('preview-img').src = result;
+      document.getElementById('preview-container').classList.add('show');
+      document.getElementById('upload-zone').style.display = 'none';
+      document.getElementById('analyze-btn').disabled = false;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeImage() {
+    imageBase64 = null;
+    imageMimeType = null;
+    document.getElementById('preview-container').classList.remove('show');
+    document.getElementById('upload-zone').style.display = '';
+    document.getElementById('file-input').value = '';
+    document.getElementById('analyze-btn').disabled = true;
+    document.getElementById('results').classList.remove('show');
+  }
+
+  // ── Paste support ──────────────────────────────────────────
+  document.addEventListener('paste', handlePaste);
+  function handlePaste(e) {
+    if (e.target.closest('#settings-drawer')) return;
+    const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (file) loadFile(file);
+        return;
+      }
+    }
+  }
+
+  // Visual feedback when upload zone is focused
+  const zone = document.getElementById('upload-zone');
+  zone.addEventListener('focus', () => zone.classList.add('paste-ready'));
+  zone.addEventListener('blur', () => zone.classList.remove('paste-ready'));
+  // Click on zone focuses it (making paste shortcut obvious)
+  zone.addEventListener('click', (e) => {
+    // Don't steal click from file input button
+    if (e.target.closest('.alt-btn')) return;
+    zone.focus();
+  });
+
+  // Drag and drop
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadFile(file);
+  });
+
+  // ── UI helpers ─────────────────────────────────────────────
+  function setLoading(loading) {
+    const btn = document.getElementById('analyze-btn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btn-text');
+    btn.disabled = loading;
+    spinner.style.display = loading ? 'block' : 'none';
+    btnText.textContent = loading ? 'Analyzing your code...' : '🔍 Analyze My Code';
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 6000);
+  }
+
+  function renderFeedback(text, elementId) {
+    let html = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^### (.+)$/gm, '<h3 style="color:var(--teal);font-size:1rem;margin:14px 0 6px;">$1</h3>')
+      .replace(/^## (.+)$/gm, '<h3 style="color:var(--yellow);font-size:1.05rem;margin:14px 0 6px;">$1</h3>')
+      .replace(/^✅ (.+)$/gm, '<div class="good">✅ $1</div>')
+      .replace(/^⚠️ (.+)$/gm, '<div class="warning">⚠️ $1</div>')
+      .replace(/^🔧 (.+)$/gm, '<div class="step">🔧 $1</div>')
+      .replace(/^💡 (.+)$/gm, '<div class="step">💡 $1</div>')
+      .replace(/^- (.+)$/gm, '<div style="padding:3px 0 3px 10px; border-left:2px solid rgba(255,255,255,0.12)">· $1</div>')
+      .replace(/\n\n/g, '<br><br>')
+      .replace(/\n/g, '<br>');
+    document.getElementById(elementId).innerHTML = html;
+  }
+
+  // ── Main analysis ──────────────────────────────────────────
+  async function analyzeCode() {
+    if (!imageBase64) return;
+    setLoading(true);
+    document.getElementById('results').classList.remove('show');
+    document.getElementById('error-msg').classList.remove('show');
+
+    const context = document.getElementById('context-input').value.trim();
+    const issues = getIssues();
+    const issuesBlock = issues.length
+      ? `\n\nThe teacher has flagged these as common issues to watch for. If any appear, gently guide the student toward noticing them — without naming the issue outright:\n${issues.map((v,i) => `${i+1}. ${v}`).join('\n')}`
+      : '';
+
+    const studentPrompt = `You are a friendly, encouraging coding helper for middle school students (grades 6-8) working with LEGO SPIKE Prime block coding.
+
+A student has uploaded a screenshot of their SPIKE Prime block code program.
+${context ? `The student says their program is supposed to: "${context}"` : ''}${issuesBlock}
+
+Analyze the block code carefully and give feedback written DIRECTLY TO THE STUDENT. Your tone should be warm, encouraging, and age-appropriate for 11-14 year olds. DO NOT be condescending.
+
+Use this format:
+- Start with one encouraging sentence about something you see they did right (or are trying to do)
+- Use ✅ lines for things that look correct
+- Use ⚠️ lines for things that might cause a bug or issue
+- Use 💡 lines for hints and suggestions (guide them toward the fix WITHOUT giving the exact answer away — let them think it through!)
+- End with a short motivating message
+
+Keep it concise (under 200 words). Use simple language. No jargon. Don't mention Python or text coding — only block coding concepts. Reference specific blocks by name if you can see them.`;
+
+    const teacherPrompt = `You are an expert robotics educator reviewing a student's LEGO SPIKE Prime block code screenshot.
+${context ? `The student says the program should: "${context}"` : ''}
+${issues.length ? `\nTeacher's flagged common issues for this class:\n${issues.map((v,i)=>`${i+1}. ${v}`).join('\n')}` : ''}
+
+Provide a concise TEACHER SUMMARY including:
+## What the student is attempting
+## Bugs or logic errors identified
+## Common misconceptions this may reveal
+## Suggested next steps or questions to ask the student
+
+Be technical and direct. Under 180 words.`;
+
+    try {
+      const studentRes = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{
+            role: "user",
+            content: [
+              { type: "image", source: { type: "base64", media_type: imageMimeType, data: imageBase64 } },
+              { type: "text", text: studentPrompt }
+            ]
+          }]
+        })
+      });
+
+      const studentData = await studentRes.json();
+      if (studentData.error) throw new Error(studentData.error.message);
+      const studentText = studentData.content.find(b => b.type === 'text')?.text || '';
+      renderFeedback(studentText, 'student-feedback');
+
+      if (currentMode === 'teacher') {
+        const teacherRes = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 1000,
+            messages: [{
+              role: "user",
+              content: [
+                { type: "image", source: { type: "base64", media_type: imageMimeType, data: imageBase64 } },
+                { type: "text", text: teacherPrompt }
+              ]
+            }]
+          })
+        });
+        const teacherData = await teacherRes.json();
+        const teacherText = teacherData.content.find(b => b.type === 'text')?.text || '';
+        renderFeedback(teacherText, 'teacher-feedback');
+        document.getElementById('teacher-section').classList.add('show');
+      }
+
+      document.getElementById('results').classList.add('show');
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch (err) {
+      showError('Something went wrong analyzing the image. Please try again! (' + err.message + ')');
+      console.error(err);
+    }
+
+    setLoading(false);
+  }
+
+  function resetTool() {
+    removeImage();
+    document.getElementById('context-input').value = '';
+    document.getElementById('results').classList.remove('show');
+    document.getElementById('teacher-section').classList.remove('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Init — load shared issues on startup so they're ready for analysis
+  loadIssuesFromCloud().then(issues => updateGearBadge(issues.length));
+</script>
+</body>
+</html>
